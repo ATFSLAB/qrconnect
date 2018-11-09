@@ -79,7 +79,6 @@ class DataLayer() :
 			rss = rs.json()
 			data = rss['result']
 			text = data['input']
-			print([text[0:2], text])
 			body = bytes.fromhex(text[2:]).decode('utf8') if text[0:2] == '0x' else ''
 			
 			data['input'] = body

@@ -1,0 +1,10 @@
+{
+	"server": {
+		"FLASK_DEBUG": true
+	},
+	"redis": {
+		"path": "/var/run/redis/redis.sock"
+		"decode_responses": true
+	},
+	"etherscan": "<<ETHERSCAN_APIKEY_HERE>>"
+}

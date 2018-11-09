@@ -19,6 +19,7 @@ configure = _configure('./settings.json')
 app.config.from_object(configure['server'] if 'server' in configure else {})
 api_token = configure['etherscan'] if 'etherscan' in configure else ''
 redis_conf = configure['redis'] if 'redis' in configure else {}
+redis_conf['decode_responses'] = True
 app.logger.info('[SETTINGS] ' + str(configure))
 data = datalayer.DataLayer(redis_conf, api_token)
 
