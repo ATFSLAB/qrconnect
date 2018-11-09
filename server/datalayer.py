@@ -62,7 +62,7 @@ class DataLayer() :
 			pipe = self.redis.pipeline()
 			pipe.hmset(rk, data)
 			pipe.expire(rk, 24*3600)
-			pipe.zadd(ik, time(), hash)
+			pipe.zadd(ik, hash, time())
 			pipe.execute()
 			return self.redis.ttl(rk)
 		else :
