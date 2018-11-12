@@ -39,7 +39,7 @@ class DataLayer() :
 		# trim older indices
 		self.__trim(rk)
 
-		return [rv for rv in self.redis.zrange(rk, starts, paged, withscores=True)]
+		return [rv for rv in self.redis.zrevrange(rk, starts, paged,  withscores=True)]
 
 	def getinfo(self, hash) :
 		if not self.__valid(hash) :
@@ -55,15 +55,18 @@ class DataLayer() :
 			
 		return self.redis.hgetall(rk)
 
-	def setinfo(self, hash, data) :
+	def setinfo(self, hash, data=None) :
 		ik = self.__key()
 		if self.__valid(hash) and data is not None :
 			rk = self.__key(hash)
-			pipe = self.redis.pipeline()
-			pipe.hmset(rk, data)
-			pipe.expire(rk, 24*3600)
-			pipe.zadd(ik, hash, time())
-			pipe.execute()
+			if self.redis.exists(rk) :
+				self.redis.expire(rk, 24*3600)
+			else :
+				pipe = self.redis.pipeline()
+				pipe.hmset(rk, data)
+				pipe.expire(rk, 24*3600)
+				pipe.zadd(ik, hash, time())
+				pipe.execute()
 			return self.redis.ttl(rk)
 		else :
 			return 0
@@ -79,11 +82,16 @@ class DataLayer() :
 			rss = rs.json()
 			data = rss['result']
 			text = data['input']
-			body = bytes.fromhex(text[2:]).decode('utf8') if text[0:2] == '0x' else ''
-			
-			data['input'] = body
+			try :
+				body = bytes.fromhex(text[2:]).decode('utf8') if text[0:2] == '0x' else ''
+
+				data['input'] = body
+			except :
+				pass
+
 			return data
-		except :
+		except Exception as ex:
+			print(ex)
 			return None
 
 
