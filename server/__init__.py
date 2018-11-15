@@ -1,6 +1,6 @@
 import os
 import json
-import flask
+import Flask as flask
 
 from . import datalayer
 
